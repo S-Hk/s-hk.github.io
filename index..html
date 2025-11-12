@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-m-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S-Hk :: Java Developer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        /* Custom Styles & Color Palette */
+        :root {
+            --bg-void: #0A0D14;
+            --bg-panel: #1A1E2A;
+            --text-light: #E5E7EB;
+            --text-haze: #8B949E;
+            --accent-solar: #FFB82B;
+            --accent-sky: #E87A00;
+        }
+
+        body {
+            background-color: var(--bg-void);
+            color: var(--text-haze);
+            font-family: 'Share Tech Mono', monospace;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--text-light);
+            text-shadow: 0 0 8px var(--accent-solar);
+        }
+
+        /* --- Custom UI Elements --- */
+        .panel {
+            background-color: var(--bg-panel);
+            border: 1px solid var(--bg-panel);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .panel:hover {
+            border-color: var(--accent-solar);
+            box-shadow: 0 0 15px rgba(255, 184, 43, 0.3);
+        }
+
+        .glow-button {
+            border: 1px solid var(--accent-solar);
+            color: var(--accent-solar);
+            text-shadow: 0 0 8px var(--accent-solar);
+            transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .glow-button:hover {
+            background-color: var(--accent-solar);
+            color: var(--bg-void);
+            text-shadow: none;
+            box-shadow: 0 0 20px var(--accent-solar);
+        }
+
+        .nav-link {
+            position: relative;
+            color: var(--text-haze);
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--accent-solar);
+            text-shadow: 0 0 8px var(--accent-solar);
+        }
+
+        /* Underline effect */
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            transform: scaleX(0);
+            height: 1px;
+            bottom: -4px;
+            left: 0;
+            background-color: var(--accent-solar);
+            transform-origin: bottom right;
+            transition: transform 0.3s ease-out;
+        }
+
+        .nav-link:hover::after {
+            transform: scaleX(1);
+            transform-origin: bottom left;
+        }
+
+        /* --- Typewriter --- */
+        .typewriter-cursor {
+            display: inline-block;
+            width: 10px;
+            height: 1.2em;
+            background-color: var(--accent-solar);
+            margin-left: 5px;
+            animation: blink 0.7s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* --- Background Canvas --- */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+        
+        /* --- Experience Timeline --- */
+        .timeline {
+            position: relative;
+            padding: 2rem 0;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: var(--bg-panel);
+            transform: translateX(-50%);
+        }
+        .timeline-item {
+            position: relative;
+            width: 50%;
+            padding: 0 2rem;
+        }
+        .timeline-item:nth-child(odd) {
+            left: 0;
+            padding-right: 4rem;
+            text-align: right;
+        }
+        .timeline-item:nth-child(even) {
+            left: 50%;
+            padding-left: 4rem;
+        }
+        .timeline-content {
+            background-color: var(--bg-panel);
+            padding: 1rem 1.5rem;
+            border: 1px solid var(--bg-panel);
+            transition: border-color 0.3s ease;
+        }
+        .timeline-content:hover {
+            border-color: var(--accent-solar);
+        }
+        .timeline-dot {
+            content: '';
+            position: absolute;
+            top: 1.5rem;
+            width: 16px;
+            height: 16px;
+            background-color: var(--bg-void);
+            border: 3px solid var(--accent-solar);
+            border-radius: 50%;
+            z-index: 10;
+            transition: background-color 0.3s ease;
+        }
+        .timeline-item:nth-child(odd) .timeline-dot {
+            right: 0;
+            transform: translate(50%, 0);
+        }
+        .timeline-item:nth-child(even) .timeline-dot {
+            left: 0;
+            transform: translate(-50%, 0);
+        }
+        .timeline-item:hover .timeline-dot {
+            background-color: var(--accent-solar);
+        }
+
+        /* Responsive Timeline */
+        @media (max-width: 768px) {
+            .timeline::before {
+                left: 20px;
+            }
+            .timeline-item {
+                width: 100%;
+                padding-left: 3rem;
+                padding-right: 1rem;
+            }
+            .timeline-item:nth-child(odd),
+            .timeline-item:nth-child(even) {
+                left: 0;
+                padding-left: 4rem;
+                padding-right: 1rem;
+                text-align: left;
+            }
+            .timeline-item:nth-child(odd) .timeline-dot,
+            .timeline-item:nth-child(even) .timeline-dot {
+                left: 20px;
+                transform: translate(-50%, 0);
+            }
+        }
+
+    </style>
+</head>
+<body class="min-h-screen">
+    <canvas id="particle-canvas"></canvas>
+
+    <header class="fixed top-0 left-0 right-0 z-50 bg-opacity-80 backdrop-blur-md" style="background-color: rgba(10, 13, 20, 0.8);">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#home" class="text-2xl font-bold" style="color: var(--accent-solar); text-shadow: 0 0 10px var(--accent-solar);">
+                &gt; S-Hk_
+            </a>
+            <div class="hidden md:flex space-x-6">
+                <a href="#home" class="nav-link">HOME</a>
+                <a href="#projects" class="nav-link">PROJECTS</a>
+                <a href="#experience" class="nav-link">EXPERIENCE</a>
+                <a href="#contact" class="nav-link">CONTACT</a>
+            </div>
+            <div class="md:hidden">
+                <button class="text-light">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </nav>
+        <div class="h-px" style="background: linear-gradient(to right, transparent, var(--accent-solar), transparent);"></div>
+    </header>
+
+    <main class="container mx-auto px-6 pt-24">
+
+        <section id="home" class="min-h-[80vh] flex flex-col justify-center items-center text-center">
+            <h1 class="text-4xl md:text-6xl font-bold mb-4">
+                <span id="typewriter"></span><span class="typewriter-cursor"></span>
+            </h1>
+            <h2 class="text-xl md:text-2xl text-haze mb-8">
+                Building robust backends in a chaotic world.
+            </h2>
+            <a href="#projects" class="glow-button px-6 py-3 text-lg">
+                [ Initialize Protocol ]
+            </a>
+        </section>
+
+        <section id="profile" class="my-16">
+            <div class="panel max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 p-8">
+                <div class="col-span-1 md:col-span-2">
+                    <h3 class="text-2xl font-bold mb-4">// USER_INFO</h3>
+                    <p class="mb-2"><span class="text-accent-solar font-bold">NAME:</span> S-Hk</p>
+                    <p class="mb-2"><span class="text-accent-solar font-bold">XP_LEVEL:</span> 5 Years Corporate Experience</p>
+                    <p class="mb-4"><span class="text-accent-solar font-bold">PRIMARY_STACK:</span> Java, Spring Boot, Microservices, API Design, SQL, MongoDB, Kafka</p>
+                    <p class="text-haze">
+                        Dedicated backend engineer with half a decade of corporate experience architecting and maintaining scalable, high-availability systems.
+                    </p>
+                </div>
+                <div class="col-span-1 flex flex-col justify-start md:justify-center items-start md:items-end space-y-4">
+                    <h3 class="text-2xl font-bold mb-4 md:text-right w-full">// LINKS</h3>
+                    <a href="https://github.com/S-Hk" target="_blank" class="nav-link text-lg flex items-center space-x-2">
+                        <i class="fab fa-github w-5"></i>
+                        <span>GitHub</span>
+                    </a>
+                    <a href="https://twitter.com/Hk_dev_" target="_blank" class="nav-link text-lg flex items-center space-x-2">
+                        <i class="fab fa-twitter w-5"></i>
+                        <span>Twitter / X</span>
+                    </a>
+                    <a href="https://x.com/Hk_dev_/" class="nav-link text-lg flex items-center space-x-2">
+                        <i class="fab fa-linkedin w-5"></i>
+                        <span>LinkedIn</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section id="projects" class="my-16 pt-16">
+            <h2 class="text-3xl font-bold text-center mb-12">// EXECUTABLES [PROJECTS]</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="panel p-6 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xl font-bold mb-2" style="color: var(--accent-solar);">Project: API Gateway</h3>
+                        <p class="text-haze mb-4">A custom API Gateway built with Spring Cloud Gateway to manage microservice traffic.</p>
+                    </div>
+                    <div class="space-x-2">
+                        <span class="text-xs px-2 py-1 rounded" style="background-color: var(--bg-void); color: var(--accent-sky);">Java</span>
+                        <span class="text-xs px-2 py-1 rounded" style="background-color: var(--bg-void); color: var(--accent-sky);">Spring Boot</span>
+                        <span class="text-xs px-2 py-1 rounded" style="background-color: var(--bg-void); color: var(--accent-sky);">Redis</span>
+                    </div>
+                </div>
+                <div class="panel p-6 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xl font-bold mb-2" style="color: var(--accent-solar);">Project: Auth Service</h3>
+                        <p class="text-haze mb-4">Centralized authentication and authorization service using Spring Security and JWT.</p>
+                    </div>
+                    <div class="space-x-2">
+                        <span class="text-xs px-2 py-1 rounded" style="background-color: var(--bg-void); color: var(--accent-sky);">Spring Security</span>
+                        <span class="text-xs px-2 py-1 rounded" style="background-color: var(--bg-void); color: var(--accent-sky);">JWT</span>
+                        <span class="text-xs px-2 py-1 rounded" style="background-color: var(--bg-void); color: var(--accent-sky);">OAuth2</span>
+                    </div>
+                </div>
+                <div class="panel p-6 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xl font-bold mb-2" style="color: var(--accent-solar);">Project: Batch Processor</h3>
+                        <p class="text-haze mb-4">High-performance batch job for processing financial data using Spring Batch.</p>
+                    </div>
+                    <div class="space-x-2">
+                        <span class="text-xs px-2 py-1 rounded" style="background-color: var(--bg-void); color: var(--accent-sky);">Spring Batch</span>
+                        <span class="text-xs px-2 py-1 rounded" style="background-color: var(--bg-void); color: var(--accent-sky);">PostgreSQL</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="experience" class="my-16 pt-16">
+            <h2 class="text-3xl font-bold text-center mb-12">// SERVICE LOG [EXPERIENCE]</h2>
+            <div class="timeline max-w-3xl mx-auto">
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content panel">
+                        <h3 class="text-lg font-bold" style="color: var(--accent-solar);">Senior Software Engineer</h3>
+                        <span class="text-sm text-haze">O.... (2025 - Present)</span>
+                        <p class="mt-2">Developing and architecting microservices for the core platform. Leading code reviews and mentoring junior developers for a famous fortune 500 company.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content panel">
+                        <h3 class="text-lg font-bold" style="color: var(--accent-solar);">Software Engineer</h3>
+                        <span class="text-sm text-haze">F.... (2021 - 2025)</span>
+                        <p class="mt-2">Developed and maintained multiple APIs, web backend services for large fortune 500 company. Implemented system monitoring with AppDynamics, log tracking with Splunk.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content panel">
+                        <h3 class="text-lg font-bold" style="color: var(--accent-solar);">Android App Developer</h3>
+                        <span class="text-sm text-haze">Self-learning (2018 - 2021)</span>
+                        <p class="mt-2">Started my java journey exploring android app development.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="my-16 pt-16 text-center">
+            <h2 class="text-3xl font-bold mb-6">// ESTABLISH_CONNECTION</h2>
+            <p class="text-haze max-w-lg mx-auto mb-8">
+                My comms are open. Looking for a backend architect or just want to discuss tech? Send a signal.
+            </p>
+            <a href="mailto:38405687+S-Hk@users.noreply.github.com" class="glow-button px-6 py-3 text-lg">
+                [ Open Secure Channel ]
+            </a>
+        </section>
+
+    </main>
+
+    <footer class="mt-24 border-t" style="border-color: var(--bg-panel);">
+        <div class="container mx-auto px-6 py-8 flex flex-col md:flex-row justify-between items-center text-center md:text-left">
+            <p class="text-haze">&copy; 2025 S-Hk. All rights reserved.</p>
+            <p style="color: var(--accent-solar); text-shadow: 0 0 5px var(--accent-solar);">
+                SYSTEM_STATUS: <span class="animate-pulse">ONLINE</span>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Typewriter Effect ---
+        const typewriterElement = document.getElementById('typewriter');
+        const phrases = [
+            "Java Developer",
+            "Spring Boot Specialist",
+            "Backend Architect"
+        ];
+        let phraseIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+
+        function type() {
+            const currentPhrase = phrases[phraseIndex];
+            
+            if (isDeleting) {
+                // Deleting
+                typewriterElement.textContent = currentPhrase.substring(0, charIndex - 1);
+                charIndex--;
+                if (charIndex === 0) {
+                    isDeleting = false;
+                    phraseIndex = (phraseIndex + 1) % phrases.length;
+                    setTimeout(type, 500); // Pause before typing new phrase
+                } else {
+                    setTimeout(type, 100); // Deleting speed
+                }
+            } else {
+                // Typing
+                typewriterElement.textContent = currentPhrase.substring(0, charIndex + 1);
+                charIndex++;
+                if (charIndex === currentPhrase.length) {
+                    isDeleting = true;
+                    setTimeout(type, 2000); // Pause at end of phrase
+                } else {
+                    setTimeout(type, 150); // Typing speed
+                }
+            }
+        }
+        document.addEventListener("DOMContentLoaded", () => setTimeout(type, 1000));
+
+        // --- Background Particle Canvas ---
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particlesArray = [];
+        const particleColor = 'rgba(232, 122, 0, 0.5)'; // --accent-sky with opacity
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 1;
+                this.speedX = Math.random() * 1 - 0.5;
+                this.speedY = Math.random() * 1 - 0.5;
+            }
+            update() {
+                if (this.x > canvas.width || this.x < 0) this.speedX *= -1;
+                if (this.y > canvas.height || this.y < 0) this.speedY *= -1;
+                this.x += this.speedX;
+                this.y += this.speedY;
+            }
+            draw() {
+                ctx.fillStyle = particleColor;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particlesArray = [];
+            let numberOfParticles = (canvas.height * canvas.width) / 9000;
+            for (let i = 0; i < numberOfParticles; i++) {
+                particlesArray.push(new Particle());
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+                particlesArray[i].draw();
+            }
+            connectParticles();
+            requestAnimationFrame(animateParticles);
+        }
+
+        function connectParticles() {
+            let opacityValue = 1;
+            for (let a = 0; a < particlesArray.length; a++) {
+                for (let b = a; b < particlesArray.length; b++) {
+                    let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x))
+                                 + ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
+                    if (distance < (canvas.width / 7) * (canvas.height / 7)) {
+                        opacityValue = 1 - (distance / 20000);
+                        ctx.strokeStyle = `rgba(232, 122, 0, ${opacityValue * 0.2})`;
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+                        ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            initParticles();
+        });
+
+        initParticles();
+        animateParticles();
+
+    </script>
+</body>
+</html>
