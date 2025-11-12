@@ -211,16 +211,16 @@
             <a href="#home" class="text-2xl font-bold" style="color: var(--accent-solar); text-shadow: 0 0 10px var(--accent-solar);">
                 &gt; S-Hk_
             </a>
-            <div class="hidden md:flex space-x-6">
-                <a href="#home" class="nav-link">HOME</a>
-                <a href="#projects" class="nav-link">PROJECTS</a>
-                <a href="#experience" class="nav-link">EXPERIENCE</a>
-                <a href="#contact" class="nav-link">CONTACT</a>
-            </div>
             <div class="md:hidden">
-                <button class="text-light">
+                <button id="mobile-menu-button" class="text-light">
                     <i class="fas fa-bars"></i>
                 </button>
+            </div>
+            <div id="mobile-menu" class="hidden md:flex flex-col md:flex-row items-center md:space-x-6 pb-4 md:pb-0">
+                <a href="#home" class="nav-link py-2 md:py-0">HOME</a>
+                <a href="#projects" class="nav-link py-2 md:py-0">PROJECTS</a>
+                <a href="#experience" class="nav-link py-2 md:py-0">EXPERIENCE</a>
+                <a href="#contact" class="nav-link py-2 md:py-0">CONTACT</a>
             </div>
         </nav>
         <div class="h-px" style="background: linear-gradient(to right, transparent, var(--accent-solar), transparent);"></div>
@@ -373,121 +373,138 @@
     </footer>
 
     <script>
-        // --- Typewriter Effect ---
-        const typewriterElement = document.getElementById('typewriter');
-        const phrases = [
-            "Java Developer",
-            "Spring Boot Specialist",
-            "Backend Architect"
-        ];
-        let phraseIndex = 0;
-        let charIndex = 0;
-        let isDeleting = false;
+    // --- Mobile Menu Toggle ---
+    const menuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
 
-        function type() {
-            const currentPhrase = phrases[phraseIndex];
-            
-            if (isDeleting) {
-                // Deleting
-                typewriterElement.textContent = currentPhrase.substring(0, charIndex - 1);
-                charIndex--;
-                if (charIndex === 0) {
-                    isDeleting = false;
-                    phraseIndex = (phraseIndex + 1) % phrases.length;
-                    setTimeout(type, 500); // Pause before typing new phrase
-                } else {
-                    setTimeout(type, 50); // Deleting speed
-                }
+    menuButton.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+        // Optional: Toggle between bars and an 'X' icon
+        const icon = menuButton.querySelector('i');
+        if (icon.classList.contains('fa-bars')) {
+            icon.classList.remove('fa-bars');
+            icon.classList.add('fa-times');
+        } else {
+            icon.classList.remove('fa-times');
+            icon.classList.add('fa-bars');
+        }
+    });
+
+    // --- Typewriter Effect ---
+    const typewriterElement = document.getElementById('typewriter');
+    const phrases = [
+        "Java Developer",
+        "Spring Boot Specialist",
+        "Backend Architect"
+    ];
+    let phraseIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+
+    function type() {
+        const currentPhrase = phrases[phraseIndex];
+
+        if (isDeleting) {
+            // Deleting
+            typewriterElement.textContent = currentPhrase.substring(0, charIndex - 1);
+            charIndex--;
+            if (charIndex === 0) {
+                isDeleting = false;
+                phraseIndex = (phraseIndex + 1) % phrases.length;
+                setTimeout(type, 500); // Pause before typing new phrase
             } else {
-                // Typing
-                typewriterElement.textContent = currentPhrase.substring(0, charIndex + 1);
-                charIndex++;
-                if (charIndex === currentPhrase.length) {
-                    isDeleting = true;
-                    setTimeout(type, 2500); // Pause at end of phrase
-                } else {
-                    setTimeout(type, 100); // Typing speed
+                setTimeout(type, 50); // Deleting speed
+            }
+        } else {
+            // Typing
+            typewriterElement.textContent = currentPhrase.substring(0, charIndex + 1);
+            charIndex++;
+            if (charIndex === currentPhrase.length) {
+                isDeleting = true;
+                setTimeout(type, 2500); // Pause at end of phrase
+            } else {
+                setTimeout(type, 100); // Typing speed
+            }
+        }
+    }
+    document.addEventListener("DOMContentLoaded", () => setTimeout(type, 1000));
+
+    // --- Background Particle Canvas ---
+    const canvas = document.getElementById('particle-canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let particlesArray = [];
+    const particleColor = 'rgba(232, 122, 0, 0.5)'; // --accent-sky with opacity
+
+    class Particle {
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.size = Math.random() * 2 + 1;
+            this.speedX = Math.random() * 1 - 0.5;
+            this.speedY = Math.random() * 1 - 0.5;
+        }
+        update() {
+            if (this.x > canvas.width || this.x < 0) this.speedX *= -1;
+            if (this.y > canvas.height || this.y < 0) this.speedY *= -1;
+            this.x += this.speedX;
+            this.y += this.speedY;
+        }
+        draw() {
+            ctx.fillStyle = particleColor;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
+    function initParticles() {
+        particlesArray = [];
+        let numberOfParticles = (canvas.height * canvas.width) / 9000;
+        for (let i = 0; i < numberOfParticles; i++) {
+            particlesArray.push(new Particle());
+        }
+    }
+
+    function animateParticles() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < particlesArray.length; i++) {
+            particlesArray[i].update();
+            particlesArray[i].draw();
+        }
+        connectParticles();
+        requestAnimationFrame(animateParticles);
+    }
+
+    function connectParticles() {
+        let opacityValue = 1;
+        for (let a = 0; a < particlesArray.length; a++) {
+            for (let b = a; b < particlesArray.length; b++) {
+                let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x))
+                            + ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
+                if (distance < (canvas.width / 7) * (canvas.height / 7)) {
+                    opacityValue = 1 - (distance / 20000);
+                    ctx.strokeStyle = `rgba(232, 122, 0, ${opacityValue * 0.2})`;
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+                    ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+                    ctx.stroke();
                 }
             }
         }
-        document.addEventListener("DOMContentLoaded", () => setTimeout(type, 1000));
+    }
 
-        // --- Background Particle Canvas ---
-        const canvas = document.getElementById('particle-canvas');
-        const ctx = canvas.getContext('2d');
+    window.addEventListener('resize', () => {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-
-        let particlesArray = [];
-        const particleColor = 'rgba(232, 122, 0, 0.5)'; // --accent-sky with opacity
-
-        class Particle {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2 + 1;
-                this.speedX = Math.random() * 1 - 0.5;
-                this.speedY = Math.random() * 1 - 0.5;
-            }
-            update() {
-                if (this.x > canvas.width || this.x < 0) this.speedX *= -1;
-                if (this.y > canvas.height || this.y < 0) this.speedY *= -1;
-                this.x += this.speedX;
-                this.y += this.speedY;
-            }
-            draw() {
-                ctx.fillStyle = particleColor;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-
-        function initParticles() {
-            particlesArray = [];
-            let numberOfParticles = (canvas.height * canvas.width) / 9000;
-            for (let i = 0; i < numberOfParticles; i++) {
-                particlesArray.push(new Particle());
-            }
-        }
-
-        function animateParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            for (let i = 0; i < particlesArray.length; i++) {
-                particlesArray[i].update();
-                particlesArray[i].draw();
-            }
-            connectParticles();
-            requestAnimationFrame(animateParticles);
-        }
-
-        function connectParticles() {
-            let opacityValue = 1;
-            for (let a = 0; a < particlesArray.length; a++) {
-                for (let b = a; b < particlesArray.length; b++) {
-                    let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x))
-                                 + ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
-                    if (distance < (canvas.width / 7) * (canvas.height / 7)) {
-                        opacityValue = 1 - (distance / 20000);
-                        ctx.strokeStyle = `rgba(232, 122, 0, ${opacityValue * 0.2})`;
-                        ctx.lineWidth = 1;
-                        ctx.beginPath();
-                        ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
-                        ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
-                        ctx.stroke();
-                    }
-                }
-            }
-        }
-
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            initParticles();
-        });
-
         initParticles();
-        animateParticles();
+    });
+
+    initParticles();
+    animateParticles();
 
     </script>
 </body>
